@@ -17,7 +17,7 @@
  *
  */
 #pragma once
-
+/*
 #include <stdint.h>
 
 #define SW_SERIAL_PLACEHOLDER 1
@@ -40,3 +40,4 @@ public:
 protected:
   bool listening;
 };
+*/
