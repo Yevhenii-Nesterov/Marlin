@@ -442,13 +442,13 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 260
-#define HEATER_1_MAXTEMP 260
-#define HEATER_2_MAXTEMP 260
-#define HEATER_3_MAXTEMP 260
-#define HEATER_4_MAXTEMP 260
-#define HEATER_5_MAXTEMP 260
-#define BED_MAXTEMP      120
+#define HEATER_0_MAXTEMP 275 /* actual is HEATER_n_MAXTEMP - 15 in menu_tune.cpp*/
+#define HEATER_1_MAXTEMP 275
+#define HEATER_2_MAXTEMP 275
+#define HEATER_3_MAXTEMP 275
+#define HEATER_4_MAXTEMP 275
+#define HEATER_5_MAXTEMP 275
+#define BED_MAXTEMP      130 /* actual is BED_MAXTEMP - 10 */
 
 //===========================================================================
 //============================= PID Settings ================================
@@ -476,6 +476,11 @@
   #define DEFAULT_Kp 21.73
   #define DEFAULT_Ki 1.54
   #define DEFAULT_Kd 76.55
+
+  //Ender 3x autotune
+  //#define DEFAULT_Kp 21.09
+  //#define DEFAULT_Ki 1.70
+  //#define DEFAULT_Kd 65.53
 
   // Ultimaker
   //#define DEFAULT_Kp 22.2
@@ -540,9 +545,14 @@
   //#define DEFAULT_bedKd 1675.16
 
   //Ender3X autotune v2
-  #define DEFAULT_bedKp 469.37
-  #define DEFAULT_bedKi 92.41
-  #define DEFAULT_bedKd 595.98
+  //#define DEFAULT_bedKp 469.37
+  //#define DEFAULT_bedKi 92.41
+  //#define DEFAULT_bedKd 595.98
+
+  //Ender3X autotune v3
+  #define DEFAULT_bedKp 64.47
+  #define DEFAULT_bedKi 12.00
+  #define DEFAULT_bedKd 230.87
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -725,7 +735,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 95.9 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 97.4 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -772,7 +782,7 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-#define CLASSIC_JERK
+//#define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
@@ -794,7 +804,7 @@
  *   http://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.08 // (mm) Distance from real junction edge
 #endif
 
 /**
@@ -805,7 +815,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-//#define S_CURVE_ACCELERATION
+#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
