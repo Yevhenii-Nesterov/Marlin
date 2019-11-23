@@ -42,12 +42,6 @@
 #define MACHINE_CAN_STOP (EITHER(SDSUPPORT, HOST_PROMPT_SUPPORT) || defined(ACTION_ON_CANCEL))
 #define MACHINE_CAN_PAUSE (ANY(SDSUPPORT, HOST_PROMPT_SUPPORT, PARK_HEAD_ON_PAUSE) || defined(ACTION_ON_PAUSE))
 
-#if MACHINE_CAN_STOP
-  void menu_abort_confirm() {
-    do_select_screen(GET_TEXT(MSG_BUTTON_STOP), GET_TEXT(MSG_BACK), ui.abort_print, ui.goto_previous_screen, GET_TEXT(MSG_STOP_PRINT), nullptr, PSTR("?"));
-  }
-#endif // MACHINE_CAN_STOP
-
 #if ENABLED(PRUSA_MMU2)
   #include "../../lcd/menu/menu_mmu2.h"
 #endif
@@ -83,18 +77,6 @@ void menu_configuration();
   void menu_mixer();
 #endif
 
-#if HAS_SERVICE_INTERVALS
-  #if SERVICE_INTERVAL_1 > 0
-    void menu_service1();
-  #endif
-  #if SERVICE_INTERVAL_2 > 0
-    void menu_service2();
-  #endif
-  #if SERVICE_INTERVAL_3 > 0
-    void menu_service3();
-  #endif
-#endif
-
 extern const char M21_STR[];
 
 void menu_main() {
@@ -113,7 +95,13 @@ void menu_main() {
       ACTION_ITEM(MSG_PAUSE_PRINT, ui.pause_print);
     #endif
     #if MACHINE_CAN_STOP
-      SUBMENU(MSG_STOP_PRINT, menu_abort_confirm);
+      SUBMENU(MSG_STOP_PRINT, []{
+        MenuItem_confirm::select_screen(
+          GET_TEXT(MSG_BUTTON_STOP), GET_TEXT(MSG_BACK),
+          ui.abort_print, ui.goto_previous_screen,
+          GET_TEXT(MSG_STOP_PRINT), (PGM_P)nullptr, PSTR("?")
+        );
+      });
     #endif
     SUBMENU(MSG_TUNE, menu_tune);
   }
@@ -239,14 +227,34 @@ void menu_main() {
   #endif // HAS_ENCODER_WHEEL && SDSUPPORT
 
   #if HAS_SERVICE_INTERVALS
+    static auto _service_reset = [](const int index) {
+      print_job_timer.resetServiceInterval(index);
+      #if HAS_BUZZER
+        ui.completion_feedback();
+      #endif
+      ui.reset_status();
+      ui.return_to_status();
+    };
     #if SERVICE_INTERVAL_1 > 0
-      SUBMENU_P(PSTR(SERVICE_NAME_1), menu_service1);
+      CONFIRM_ITEM_P(PSTR(SERVICE_NAME_1),
+        MSG_BUTTON_RESET, MSG_BUTTON_CANCEL,
+        []{ _service_reset(1); }, ui.goto_previous_screen,
+        GET_TEXT(MSG_SERVICE_RESET), F(SERVICE_NAME_1), PSTR("?")
+      );
     #endif
     #if SERVICE_INTERVAL_2 > 0
-      SUBMENU_P(PSTR(SERVICE_NAME_2), menu_service2);
+      CONFIRM_ITEM_P(PSTR(SERVICE_NAME_2),
+        MSG_BUTTON_RESET, MSG_BUTTON_CANCEL,
+        []{ _service_reset(2); }, ui.goto_previous_screen,
+        GET_TEXT(MSG_SERVICE_RESET), F(SERVICE_NAME_2), PSTR("?")
+      );
     #endif
     #if SERVICE_INTERVAL_3 > 0
-      SUBMENU_P(PSTR(SERVICE_NAME_3), menu_service3);
+      CONFIRM_ITEM_P(PSTR(SERVICE_NAME_3),
+        MSG_BUTTON_RESET, MSG_BUTTON_CANCEL,
+        []{ _service_reset(3); }, ui.goto_previous_screen,
+        GET_TEXT(MSG_SERVICE_RESET), F(SERVICE_NAME_3), PSTR("?")
+      );
     #endif
   #endif
 
