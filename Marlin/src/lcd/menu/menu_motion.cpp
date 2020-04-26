@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -86,28 +86,16 @@ static void _lcd_move_xyz(PGM_P const name, const AxisEnum axis) {
     #if HAS_SOFTWARE_ENDSTOPS
       if (soft_endstops_enabled) switch (axis) {
         case X_AXIS:
-          #if ENABLED(MIN_SOFTWARE_ENDSTOP_X)
-            min = soft_endstop.min.x;
-          #endif
-          #if ENABLED(MAX_SOFTWARE_ENDSTOP_X)
-            max = soft_endstop.max.x;
-          #endif
+          TERN_(MIN_SOFTWARE_ENDSTOP_X, min = soft_endstop.min.x);
+          TERN_(MAX_SOFTWARE_ENDSTOP_X, max = soft_endstop.max.x);
           break;
         case Y_AXIS:
-          #if ENABLED(MIN_SOFTWARE_ENDSTOP_Y)
-            min = soft_endstop.min.y;
-          #endif
-          #if ENABLED(MAX_SOFTWARE_ENDSTOP_Y)
-            max = soft_endstop.max.y;
-          #endif
+          TERN_(MIN_SOFTWARE_ENDSTOP_Y, min = soft_endstop.min.y);
+          TERN_(MAX_SOFTWARE_ENDSTOP_Y, max = soft_endstop.max.y);
           break;
         case Z_AXIS:
-          #if ENABLED(MIN_SOFTWARE_ENDSTOP_Z)
-            min = soft_endstop.min.z;
-          #endif
-          #if ENABLED(MAX_SOFTWARE_ENDSTOP_Z)
-            max = soft_endstop.max.z;
-          #endif
+          TERN_(MIN_SOFTWARE_ENDSTOP_Z, min = soft_endstop.min.z);
+          TERN_(MAX_SOFTWARE_ENDSTOP_Z, max = soft_endstop.max.z);
         default: break;
       }
     #endif // HAS_SOFTWARE_ENDSTOPS
@@ -230,9 +218,7 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
       case Y_AXIS: STATIC_ITEM(MSG_MOVE_Y, SS_CENTER|SS_INVERT); break;
       case Z_AXIS: STATIC_ITEM(MSG_MOVE_Z, SS_CENTER|SS_INVERT); break;
       default:
-        #if ENABLED(MANUAL_E_MOVES_RELATIVE)
-          manual_move_e_origin = current_position.e;
-        #endif
+        TERN_(MANUAL_E_MOVES_RELATIVE, manual_move_e_origin = current_position.e);
         STATIC_ITEM(MSG_MOVE_E, SS_CENTER|SS_INVERT);
         break;
     }
@@ -250,7 +236,11 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
     if (axis == Z_AXIS && (SHORT_MANUAL_Z_MOVE) > 0.0f && (SHORT_MANUAL_Z_MOVE) < 0.1f) {
       extern const char NUL_STR[];
       SUBMENU_P(NUL_STR, []{ _goto_manual_move(float(SHORT_MANUAL_Z_MOVE)); });
-      MENU_ITEM_ADDON_START(0);
+      MENU_ITEM_ADDON_START(0
+        #if HAS_CHARACTER_LCD
+          + 1
+        #endif
+      );
         char tmp[20], numstr[10];
         // Determine digits needed right of decimal
         const uint8_t digs = !UNEAR_ZERO((SHORT_MANUAL_Z_MOVE) * 1000 - int((SHORT_MANUAL_Z_MOVE) * 1000)) ? 4 :
@@ -267,24 +257,16 @@ void menu_move() {
   START_MENU();
   BACK_ITEM(MSG_MOTION);
 
-  #if HAS_SOFTWARE_ENDSTOPS && ENABLED(SOFT_ENDSTOPS_MENU_ITEM)
+  #if BOTH(HAS_SOFTWARE_ENDSTOPS, SOFT_ENDSTOPS_MENU_ITEM)
     EDIT_ITEM(bool, MSG_LCD_SOFT_ENDSTOPS, &soft_endstops_enabled);
   #endif
 
-  if (
+  if (true
     #if IS_KINEMATIC || ENABLED(NO_MOTION_BEFORE_HOMING)
-      all_axes_homed()
-    #else
-      true
+      && all_axes_homed()
     #endif
   ) {
-    if (
-      #if ENABLED(DELTA)
-        current_position.z <= delta_clip_start_height
-      #else
-        true
-      #endif
-    ) {
+    if (TERN1(DELTA, current_position.z <= delta_clip_start_height)) {
       SUBMENU(MSG_MOVE_X, []{ _menu_move_distance(X_AXIS, lcd_move_x); });
       SUBMENU(MSG_MOVE_Y, []{ _menu_move_distance(Y_AXIS, lcd_move_y); });
     }
@@ -353,7 +335,7 @@ void menu_move() {
     #elif E_MANUAL > 1
 
       // Independent extruders with one E-stepper per hotend
-      for (uint8_t n = 0; n < E_MANUAL; n++) SUBMENU_MOVE_E(n);
+      LOOP_L_N(n, E_MANUAL) SUBMENU_MOVE_E(n);
 
     #endif
 
@@ -389,9 +371,9 @@ void menu_motion() {
   //
   GCODES_ITEM(MSG_AUTO_HOME, G28_STR);
   #if ENABLED(INDIVIDUAL_AXIS_HOMING_MENU)
-    GCODES_ITEM(MSG_AUTO_HOME_X, PSTR("G28 X"));
-    GCODES_ITEM(MSG_AUTO_HOME_Y, PSTR("G28 Y"));
-    GCODES_ITEM(MSG_AUTO_HOME_Z, PSTR("G28 Z"));
+    GCODES_ITEM(MSG_AUTO_HOME_X, PSTR("G28X"));
+    GCODES_ITEM(MSG_AUTO_HOME_Y, PSTR("G28Y"));
+    GCODES_ITEM(MSG_AUTO_HOME_Z, PSTR("G28Z"));
   #endif
 
   //
