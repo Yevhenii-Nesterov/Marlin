@@ -508,9 +508,14 @@
       //#define DEFAULT_Kd 76.55
 
       //fine tuning
-      #define DEFAULT_Kp 37.04
-      #define DEFAULT_Ki 4.97
-      #define DEFAULT_Kd 69.04
+      //#define DEFAULT_Kp 37.04
+      //#define DEFAULT_Ki 4.97
+      //#define DEFAULT_Kd 69.04
+
+      //fine tuning, manual
+      #define DEFAULT_Kp 37.0
+      #define DEFAULT_Ki 4.0
+      #define DEFAULT_Kd 70.0
   #endif
 
 
