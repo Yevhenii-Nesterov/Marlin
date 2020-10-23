@@ -591,10 +591,15 @@
   //#define DEFAULT_bedKi 92.41
   //#define DEFAULT_bedKd 595.98
 
-  //Ender3X autotune v4
-  #define DEFAULT_bedKp 225.65
-  #define DEFAULT_bedKi 39.09
-  #define DEFAULT_bedKd 868.29
+  //Ender3X autotune v4, 70c
+  //#define DEFAULT_bedKp 225.65
+  //#define DEFAULT_bedKi 39.09
+  //#define DEFAULT_bedKd 868.29
+ 
+  //Ender3X autotune v5 shield, 90c
+  #define DEFAULT_bedKp 301.51
+  #define DEFAULT_bedKi 54.51
+  #define DEFAULT_bedKd 1111.87
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
