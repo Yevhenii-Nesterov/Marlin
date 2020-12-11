@@ -1185,14 +1185,14 @@
 
 // The size of the print bed
 #define X_BED_SIZE 220
-#define Y_BED_SIZE 220
+#define Y_BED_SIZE 190
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
-#define Y_MIN_POS 0
+#define Y_MIN_POS -30
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
+#define Y_MAX_POS (Y_BED_SIZE - Y_MIN_POS)
 #define Z_MAX_POS 210
 
 /**
@@ -1417,7 +1417,7 @@
 #if ENABLED(LEVEL_BED_CORNERS)
   #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
   #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points
-  #define LEVEL_CORNERS_Z_HOP       4.0   // (mm) Z height of nozzle between leveling points
+  #define LEVEL_CORNERS_Z_HOP       5.0   // (mm) Z height of nozzle between leveling points
   #define LEVEL_CENTER_TOO              // Move to the center after the last corner
 #endif
 
