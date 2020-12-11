@@ -513,9 +513,14 @@
       //#define DEFAULT_Kd 69.04
 
       //fine tuning, manual
-      #define DEFAULT_Kp 37.0
-      #define DEFAULT_Ki 4.0
-      #define DEFAULT_Kd 70.0
+      //#define DEFAULT_Kp 37.0
+      //#define DEFAULT_Ki 4.0
+      //#define DEFAULT_Kd 70.0
+
+      //c = 100 BMG WIND
+      #define DEFAULT_Kp 13.12
+      #define DEFAULT_Ki 0.94
+      #define DEFAULT_Kd 45.75
   #endif
 
 
@@ -798,7 +803,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 415 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 429 }
 
 /**
  * Default Max Feed Rate (mm/s)
